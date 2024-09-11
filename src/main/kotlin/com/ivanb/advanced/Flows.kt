@@ -151,7 +151,7 @@ object Flows {
     suspend fun getFahrenheitTemps(): Flow<TemperatureReading> =
         readTemperatures()
             .map {
-                TemperatureReading(it.location, it.temperature.toFahrenheit(), it.timestamp)
+                it.copy(temperature = it.temperature.toFahrenheit())
             }.retry(3) {
                 (it is RuntimeException).also { logger.info("retrying....") }
             }.catch {
