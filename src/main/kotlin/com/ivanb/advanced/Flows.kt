@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.ivanb.advanced
 
 import kotlinx.coroutines.coroutineScope
@@ -115,7 +117,7 @@ object Flows {
 
     /**
      * Exercise: weather station
-     *  1. transform temps to farenheit (9/5 * c + 32)
+     *  1. transform temps to Fahrenheit (9/5 * c + 32)
      *  2. calculate the latest average across all locations - emit all the averages
      *  3. catch any exception and retry the flow 3 times max
      *  4. print the avg temperatures
@@ -144,20 +146,20 @@ object Flows {
         }
     // =====================================================================
 
-    fun Double.toFarenheit() = this * (9 / 5) + 32
+    fun Double.toFahrenheit() = this * (9 / 5) + 32
 
-    suspend fun getFarenheitTemps(): Flow<TemperatureReading> =
+    suspend fun getFahrenheitTemps(): Flow<TemperatureReading> =
         readTemperatures()
             .map {
-                TemperatureReading(it.location, it.temperature.toFarenheit(), it.timestamp)
+                TemperatureReading(it.location, it.temperature.toFahrenheit(), it.timestamp)
             }.retry(3) {
                 (it is RuntimeException).also { logger.info("retrying....") }
             }.catch {
                 logger.info("Caught more than 3 errors, stopping... ($it)")
             }
 
-    suspend fun getAvgFarenheitTemps(): Flow<Double> =
-        getFarenheitTemps()
+    suspend fun getAvgFahrenheitTemps(): Flow<Double> =
+        getFahrenheitTemps()
             .scan(emptyMap<String, Double>()) { acc, (loc, temp, _) ->
                 acc + (loc to temp)
             }.map {
@@ -165,7 +167,7 @@ object Flows {
             }
 
     suspend fun getAvgTempsPerLocation(): Flow<List<Pair<String, Double>>> =
-        getFarenheitTemps()
+        getFahrenheitTemps()
             .scan(emptyMap<String, List<Double>>()) { acc, (loc, temp, _) ->
                 val currentReadingsForCity = acc.getOrElse(loc) { emptyList() }
                 acc + (loc to currentReadingsForCity + temp)
