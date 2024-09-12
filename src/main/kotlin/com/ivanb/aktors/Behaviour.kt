@@ -5,12 +5,17 @@ sealed interface Behaviour<in T> {
 }
 
 object Behaviours {
+    fun <T> receive(handler: suspend (ActorContext<T>, T) -> Behaviour<T>): Behaviour<T> = Receive(handler)
+
     /**
      * Receive a message and return a Behaviour describing how to handle the next message
      * */
-    fun <T> receiveMessage(handler: suspend (T) -> Behaviour<T>): Behaviour<T> = ReceiveMessage(handler)
+    fun <T> receiveMessage(handler: suspend (T) -> Behaviour<T>): Behaviour<T> =
+        Receive { _, msg ->
+            handler(msg)
+        }
 
-    fun <T> setup(init: () -> Behaviour<T>): Behaviour<T> = Setup(init)
+    fun <T> setup(init: (ActorContext<T>) -> Behaviour<T>): Behaviour<T> = Setup(init)
 
     @Suppress("UNCHECKED_CAST")
     fun <T> same(): Behaviour<T> = Same as Behaviour<T>
@@ -18,18 +23,18 @@ object Behaviours {
     @Suppress("UNCHECKED_CAST")
     fun <T> stopped(): Behaviour<T> = Stopped as Behaviour<T>
 
-    class ReceiveMessage<T>(
-        val handler: suspend (T) -> Behaviour<T>,
+    class Receive<T>(
+        val handler: suspend (ActorContext<T>, T) -> Behaviour<T>,
     ) : Behaviour<T>
 
     /**
-     * Behavoir is unchanged
+     * Behaviour is unchanged
      * */
     data object Same : Behaviour<Nothing>
 
     data object Stopped : Behaviour<Nothing>
 
     class Setup<T>(
-        val init: () -> Behaviour<T>,
+        val init: suspend (ActorContext<T>) -> Behaviour<T>,
     ) : Behaviour<T>
 }

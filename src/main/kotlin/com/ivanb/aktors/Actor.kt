@@ -1,5 +1,6 @@
 package com.ivanb.aktors
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.yield
@@ -12,7 +13,11 @@ internal class Actor<T>(
     private val name: String,
     private val channel: Channel<T>,
     private val job: Job,
+    private val scope: CoroutineScope,
 ) {
+    private val self = ActorRef(channel)
+    private val ctx = ActorContext(self, name, scope, job)
+
     suspend fun run(startBehaviour: Behaviour<T>) {
         var behaviour = startBehaviour
         var newBehaviour = startBehaviour
@@ -24,14 +29,14 @@ internal class Actor<T>(
              * */
 
             when (behaviour) {
-                is Behaviours.ReceiveMessage -> {
+                is Behaviours.Receive -> {
                     val msg = channel.receive()
-                    newBehaviour = behaviour.handler(msg)
+                    newBehaviour = behaviour.handler(ctx, msg)
                     behaviour = newBehaviour.ifSameThen(behaviour)
                 }
                 is Behaviours.Same -> throw IllegalStateException("The INSTANCE 'Behaviour.Same' is illegal")
                 is Behaviours.Setup -> {
-                    newBehaviour = behaviour.init()
+                    newBehaviour = behaviour.init(ctx)
                     behaviour = newBehaviour.ifSameThen(Behaviours.stopped())
                 }
                 is Behaviours.Stopped -> {

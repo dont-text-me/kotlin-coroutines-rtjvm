@@ -27,10 +27,10 @@ object WordCounterStateless {
     operator fun invoke(): Behaviour<String> = active(0)
 
     private fun active(currentCount: Int): Behaviour<String> =
-        Behaviours.receiveMessage {
-            val newCount = it.split(" ").size
+        Behaviours.receive { ctx, msg ->
+            val newCount = msg.split(" ").size
             val newTotal = currentCount + newCount
-            logger.info("Updated word count to $newTotal")
+            ctx.log.info("Updated word count to $newTotal")
             active(newTotal)
         }
 }

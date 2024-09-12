@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
  * */
 
 open class ActorScope {
-    suspend fun <T> createActor(
+    protected fun <T> createActor(
         name: String,
         scope: CoroutineScope,
         context: CoroutineContext,
@@ -21,7 +21,7 @@ open class ActorScope {
     ): ActorRef<T> {
         val channel = Channel<T>(capacity = Channel.UNLIMITED)
         scope.launch(context) {
-            val actor = Actor<T>(name, channel, coroutineContext.job)
+            val actor = Actor<T>(name, channel, coroutineContext.job, scope)
             actor.run(behaviour)
         }
         return ActorRef(channel)
