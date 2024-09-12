@@ -28,7 +28,6 @@ spotless {
         ktfmt("0.51").kotlinlangStyle()
         ktlint("1.3.1")
     }
-
     kotlinGradle {
         target("**/*.gradle.kts")
         ktfmt("0.51").kotlinlangStyle()

@@ -30,9 +30,9 @@ object SuspendFunctions {
     }
 
     val suspendLambda: suspend (Int) -> Int = { it + 1 }
-//    fun test(){
-//        val three = suspendLambda(2) // not ok
-//    }
+    //    fun test(){
+    //        val three = suspendLambda(2) // not ok
+    //    }
 }
 
 suspend fun main() {

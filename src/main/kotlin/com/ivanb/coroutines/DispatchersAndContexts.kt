@@ -25,23 +25,11 @@ object DispatchersAndContexts {
         val singleThreadDispatcher = newSingleThreadContext("single-thread")
         logger.info("demo limited dispatcher")
         coroutineScope {
-            launch(limitedDispatcher) {
-                (1..100).forEach {
-                    logger.info("Running task $it")
-                }
-            }
+            launch(limitedDispatcher) { (1..100).forEach { logger.info("Running task $it") } }
 
-            launch(limitedDispatcher) {
-                logger.info("First tasks are over")
-            }
-            launch(limitedDispatcher) {
-                (200..300).forEach {
-                    logger.info("Running task $it")
-                }
-            }
-            launch(limitedDispatcher) {
-                logger.info("other tasks are over")
-            }
+            launch(limitedDispatcher) { logger.info("First tasks are over") }
+            launch(limitedDispatcher) { (200..300).forEach { logger.info("Running task $it") } }
+            launch(limitedDispatcher) { logger.info("other tasks are over") }
         }
     }
 
@@ -97,9 +85,7 @@ object DispatchersAndContexts {
                 launch { developerWithTeam() }
             }
             launch(context = CoroutineName("bob") + TeamName("backend")) { developerWithTeam() }
-            withContext(CoroutineName("charlie")) {
-                launch { developerWithTeam() }
-            }
+            withContext(CoroutineName("charlie")) { launch { developerWithTeam() } }
         }
         logger.info("stopping...")
     }

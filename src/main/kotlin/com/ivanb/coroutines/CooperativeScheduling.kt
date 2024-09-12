@@ -14,8 +14,7 @@ object CooperativeScheduling {
 
     suspend fun greedyDeveloper() {
         logger.info("I want all the coffee")
-        while (System.currentTimeMillis() % 10000 != 0L) {
-        }
+        while (System.currentTimeMillis() % 10000 != 0L) {}
         logger.info("Done with coffee")
     }
 

@@ -23,24 +23,20 @@ object StructuredConcurrency {
 
     suspend fun fetchAndProcessData(): String =
         coroutineScope {
-            val urls = listOf("https://www.google.com", "https://www.apple.com", "https://www.samsung.com")
-            val deferredResults =
-                urls.map {
-                    async { fetchHTML(it) }
-                }
+            val urls =
+                listOf("https://www.google.com", "https://www.apple.com", "https://www.samsung.com")
+            val deferredResults = urls.map { async { fetchHTML(it) } }
             val results = deferredResults.awaitAll()
 
-            val deferredData =
-                results.map {
-                    async { processData(it) }
-                }
+            val deferredData = results.map { async { processData(it) } }
 
             deferredData.awaitAll().joinToString("\n")
         }
 
     suspend fun fetchAndProcessDataNested(): String =
         coroutineScope {
-            val urls = listOf("https://www.google.com", "https://www.apple.com", "https://www.samsung.com")
+            val urls =
+                listOf("https://www.google.com", "https://www.apple.com", "https://www.samsung.com")
             val htmls = coroutineScope { urls.map { async { fetchHTML(it) } }.awaitAll() }
             val data = coroutineScope { htmls.map { async { processData(it) } }.awaitAll() }
             data.joinToString("\n")

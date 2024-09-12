@@ -49,12 +49,8 @@ object Channels {
     suspend fun stockMarketTerminal() =
         coroutineScope {
             val stockChannel = Channel<StockPrice>()
-            launch {
-                pushStocks(stockChannel)
-            }
-            launch {
-                readStocks(stockChannel)
-            }
+            launch { pushStocks(stockChannel) }
+            launch { readStocks(stockChannel) }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -65,9 +61,7 @@ object Channels {
                     // run some operations on a channel and then close it
                     pushStocks(channel)
                 } // will automatically close the channel
-            launch {
-                readStocks(stocksChannel)
-            }
+            launch { readStocks(stocksChannel) }
         }
 
     suspend fun demoCustomChannels() =
@@ -75,7 +69,9 @@ object Channels {
             val stocksChannel =
                 Channel<StockPrice>(
                     capacity = 2,
-                    onBufferOverflow = BufferOverflow.SUSPEND, // what to do when buffer is full (wait or drop elements)
+                    onBufferOverflow =
+                        BufferOverflow
+                            .SUSPEND, // what to do when buffer is full (wait or drop elements)
                 )
             launch {
                 pushStocks(stocksChannel)
@@ -88,7 +84,8 @@ object Channels {
             }
         }
 
-    // closing = cannot send() any more elements, but can receive() elements currently in the channel
+    // closing = cannot send() any more elements, but can receive() elements currently in the
+    // channel
     // cancelling = closing + dropping all current elements in the channel
 
     suspend fun demoOnUndelivered() =

@@ -55,14 +55,10 @@ object VirtualThreads {
     fun threadWhichNeverYields() =
         Runnable {
             println("I will never block")
-            while (true) {
-            }
+            while (true) {}
         }
 
-    fun threadWhichWantsToRun() =
-        Runnable {
-            println("I would like to run. if this prints, i ran")
-        }
+    fun threadWhichWantsToRun() = Runnable { println("I would like to run. if this prints, i ran") }
 
     fun cooperativeFailureDemo() {
         val factory = Thread.ofVirtual().name("routine-", 0).factory()

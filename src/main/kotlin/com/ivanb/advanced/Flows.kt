@@ -55,10 +55,7 @@ object Flows {
     // transformers
     val productNamesCaps = delayedProducts.map { it.name.uppercase() }
 
-    suspend fun totalValue(): Double =
-        delayedProducts.fold(0.0) { acc, product ->
-            acc + product.price
-        } // emits the last value
+    suspend fun totalValue(): Double = delayedProducts.fold(0.0) { acc, product -> acc + product.price } // emits the last value
 
     val scannedValue: Flow<Double> =
         delayedProducts.scan(0.0) { acc, product ->
@@ -82,9 +79,7 @@ object Flows {
         }
 
     val productsWithSideEffects: Flow<Product> =
-        delayedProducts.onEach {
-            logger.info("Generated product $it")
-        }
+        delayedProducts.onEach { logger.info("Generated product $it") }
 
     // combine multiple flows: merge, concat, zip
 
@@ -117,13 +112,13 @@ object Flows {
 
     /**
      * Exercise: weather station
-     *  1. transform temps to Fahrenheit (9/5 * c + 32)
-     *  2. calculate the latest average across all locations - emit all the averages
-     *  3. catch any exception and retry the flow 3 times max
-     *  4. print the avg temperatures
-     *  5. run this flow for 10 seconds, then cancel
-     *  6. do the same thing per location
-     * */
+     * 1. transform temps to Fahrenheit (9/5 * c + 32)
+     * 2. calculate the latest average across all locations - emit all the averages
+     * 3. catch any exception and retry the flow 3 times max
+     * 4. print the avg temperatures
+     * 5. run this flow for 10 seconds, then cancel
+     * 6. do the same thing per location
+     */
     data class TemperatureReading(
         val location: String,
         val temperature: Double,
@@ -144,27 +139,21 @@ object Flows {
                 delay(Random.nextLong(1000))
             }
         }
+
     // =====================================================================
 
     fun Double.toFahrenheit() = this * (9 / 5) + 32
 
     suspend fun getFahrenheitTemps(): Flow<TemperatureReading> =
         readTemperatures()
-            .map {
-                it.copy(temperature = it.temperature.toFahrenheit())
-            }.retry(3) {
-                (it is RuntimeException).also { logger.info("retrying....") }
-            }.catch {
-                logger.info("Caught more than 3 errors, stopping... ($it)")
-            }
+            .map { it.copy(temperature = it.temperature.toFahrenheit()) }
+            .retry(3) { (it is RuntimeException).also { logger.info("retrying....") } }
+            .catch { logger.info("Caught more than 3 errors, stopping... ($it)") }
 
     suspend fun getAvgFahrenheitTemps(): Flow<Double> =
         getFahrenheitTemps()
-            .scan(emptyMap<String, Double>()) { acc, (loc, temp, _) ->
-                acc + (loc to temp)
-            }.map {
-                if (it.isNotEmpty()) (it.values.sum() / it.values.size) else 0.0
-            }
+            .scan(emptyMap<String, Double>()) { acc, (loc, temp, _) -> acc + (loc to temp) }
+            .map { if (it.isNotEmpty()) (it.values.sum() / it.values.size) else 0.0 }
 
     suspend fun getAvgTempsPerLocation(): Flow<List<Pair<String, Double>>> =
         getFahrenheitTemps()
@@ -180,12 +169,7 @@ object Flows {
     suspend fun demoTempFlows() =
         coroutineScope {
             logger.info("starting...")
-            val job =
-                launch {
-                    getAvgTempsPerLocation().collect {
-                        logger.info("$it")
-                    }
-                }
+            val job = launch { getAvgTempsPerLocation().collect { logger.info("$it") } }
             launch {
                 delay(10000)
                 logger.info("stopping...")

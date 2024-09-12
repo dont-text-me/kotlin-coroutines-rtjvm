@@ -86,7 +86,9 @@ object ThreadsBasics {
                     42
                 },
             )
-        println("The meaning of life is ${future.get()}") // blocks the thread until the code is done
+        println(
+            "The meaning of life is ${future.get()}",
+        ) // blocks the thread until the code is done
         executor.shutdown() // wait for all tasks to be done, no new tasks may be submitted
     }
 

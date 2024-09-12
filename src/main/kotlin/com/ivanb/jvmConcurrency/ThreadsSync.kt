@@ -30,17 +30,13 @@ object ThreadsSync {
         }
 
     fun developerRaceCondition() {
-        (1..10000).forEach {
-            Thread(syncDeveloper(it)).start()
-        }
+        (1..10000).forEach { Thread(syncDeveloper(it)).start() }
         Thread.sleep(3000)
         println("Coffee machine has served $coffeeMachine coffees")
     }
 
     fun developersAndMaintenance() {
-        (1..10000).forEach {
-            Thread(syncDeveloper(it)).start()
-        }
+        (1..10000).forEach { Thread(syncDeveloper(it)).start() }
         // maintainer
 
         thread {
@@ -90,6 +86,7 @@ object ThreadsSync {
         manager().start()
         developer().start()
     }
+
     // livelock - multiple threads do work, but dont make any progress
 
     data class Friend(

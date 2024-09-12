@@ -15,7 +15,10 @@ class UserProfileViewModel(
     // the current user profile
     // loading state
 
-    private val _profile = MutableStateFlow<UserProfile?>(null) // a thread-safe variable that emits all changes to readers
+    private val _profile =
+        MutableStateFlow<UserProfile?>(
+            null,
+        ) // a thread-safe variable that emits all changes to readers
     val profile = _profile.asStateFlow() // same as the internal field but read-only
 
     private val _loading = MutableStateFlow<Boolean>(false)

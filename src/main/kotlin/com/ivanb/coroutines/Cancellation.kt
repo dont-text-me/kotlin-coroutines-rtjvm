@@ -24,7 +24,9 @@ object Cancellation {
         delay(Random.nextLong(3000))
         employee.cancel()
         logger.info("[CEO] I have fired the developer")
-        employee.invokeOnCompletion { logger.info("employee was fired") } // job will be cancelled at the next suspension point
+        employee.invokeOnCompletion {
+            logger.info("employee was fired")
+        } // job will be cancelled at the next suspension point
     }
 
     suspend fun developerWithTry(index: Int) {
@@ -82,7 +84,9 @@ object Cancellation {
         logger.info("starting...")
         coroutineScope {
             val developer = launch { developerAtWork(3) }
-            launch { ceo(developer) } // NOTE: laptop gets automatically released when developer is cancelled
+            launch {
+                ceo(developer)
+            } // NOTE: laptop gets automatically released when developer is cancelled
         }
         logger.info("stopping...")
     }

@@ -1,4 +1,5 @@
 package com.ivanb.coroutines
+
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
